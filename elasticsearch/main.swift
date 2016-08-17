@@ -8,5 +8,7 @@
 
 import Foundation
 
-print("Hello, World!")
+let es = Elasticsearch(hosts: ["https://google.com?username=xrage"])
+
+es.printer()
 
