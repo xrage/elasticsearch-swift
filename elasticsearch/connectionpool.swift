@@ -90,15 +90,17 @@ class ConnectionPool{
     }
     
     func mark_live(connection: HttpConnection){
-        
+        self.add_connections(connection: connection)
+        if self.dead_connection_pool[connection.uri] != nil{
+            self.dead_connection_pool.removeValue(forKey: connection.uri)
+        }
     }
     
     func resurrect(){
         let threshold_minutes: Int = NSDateComponents().minute + self.dead_timeout
         for uri in self.dead_connection_pool.keys{
             if (self.dead_connection_pool[uri]!["timeout"] as! Int) < threshold_minutes || (self.connections.count == 0){
-                self.add_connections(connection: self.dead_connection_pool[uri]!["connection"] as! HttpConnection)
-                self.dead_connection_pool.removeValue(forKey: uri)
+                self.mark_live(connection: self.dead_connection_pool[uri]!["connection"] as! HttpConnection)
             }
         }
     }
