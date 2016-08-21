@@ -31,7 +31,7 @@ extension Array {
 }
 
 
-extension NSURL {
+extension URL {
     var fragments: [String: String] {
         var queryStrings = [String: String]()
         if let query = self.query {
@@ -45,11 +45,9 @@ extension NSURL {
                 queryStrings[key] = value
             }
         }
-        let components = extractURLComponents(url: self)
+        let components = extractURLComponents(self as URL)
         queryStrings.update(other: components)
+        queryStrings.update(other: ["path": self.path])
         return queryStrings
     }
 }
-
-
-

@@ -10,21 +10,21 @@ import Foundation
 
 struct JSONSerializer {
 
-    static func jsonObject(with data: Data) -> (AnyObject?, error:NSError?){
+    static func jsonObject(with data: Data, callback: (AnyObject?, NSError?) -> ()) -> Void{
         do {
-            let d: AnyObject = try JSONSerialization.jsonObject(with: data as Data, options: JSONSerialization.ReadingOptions.mutableContainers)
-            return (d, nil)
+            let d: AnyObject = try JSONSerialization.jsonObject(with: data as Data, options: JSONSerialization.ReadingOptions.mutableContainers) as AnyObject
+            callback(d, nil)
         } catch let error as NSError {
-            return (nil, error)
+            callback(nil, error)
         }
     }
     
-    static func jsonData(with data: AnyObject) -> (Data?, error:NSError?){
+    static func jsonData(with data: AnyObject, callback: (Data?, NSError?) -> ()) -> Void{
         do {
             let d: Data = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
-            return (d, nil)
+            callback(d, nil)
         } catch let error as NSError {
-            return (nil, error)
+            callback(nil, error)
         }
     }
     

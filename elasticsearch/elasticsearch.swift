@@ -11,30 +11,18 @@ import Foundation
 class Elasticsearch{
     
     var hosts:Array<String> = []
+    let transport: Transport = Transport()
+    
     
     init (hosts:Array<String>){
-        _ = TransportClass()
-        self.hosts = hosts
-        
+        transport.hosts = hosts
+        transport.setConnections()
     }
     
     func printer(){
-        print(normalize_hosts(hosts: self.hosts))
+        let params = ["size": 100, "_source": ["_id"]] as [String : Any]
+        let data = transport.performPost(path: "/buy/_search/", params: params as Dictionary<String, AnyObject>?)
+        print(data)
     }
-    
-    
-    private func normalize_hosts(hosts:Array<String>) -> [Dictionary<String, String>]{
-        if hosts.count == 0{
-            return []
-        }
-        var hosts_list: [Dictionary<String, String>] = []
-        for host in hosts{
-            let url = NSURL(string: host)
-            let data = url?.fragments
-            hosts_list.append(data!)
-        }
-        return hosts_list
-    }
-    
     
 }

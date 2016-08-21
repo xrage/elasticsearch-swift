@@ -9,13 +9,13 @@
 import Foundation
 
 
-internal func extractURLComponents(url: NSURL) -> Dictionary<String, String>{
-    let port:NSNumber = url.port == nil ? 80 : url.port!
+internal func extractURLComponents(_ url: URL) -> Dictionary<String, String>{
+    let port:NSNumber = (url as NSURL).port == nil ? 80 : (url as NSURL).port!
     let components:Dictionary<String, String> =  ["host":url.host!, "port": "\(port)", "scheme": url.scheme!]
     return components
 }
 
-internal func get_host_info(node_info: Dictionary<String, Dictionary<String, AnyObject>>, host:String) -> String?{
+internal func get_host_info(_ node_info: Dictionary<String, Dictionary<String, AnyObject>>, host:String) -> String?{
     
     let attrs = (node_info["attributes"] == nil) ? Dictionary() : node_info["attributes"]!
     let data = (attrs["data"] == nil) ? true : attrs["data"] as! Bool
