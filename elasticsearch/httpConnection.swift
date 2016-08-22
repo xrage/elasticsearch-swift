@@ -21,11 +21,11 @@ class HttpConnection: NSObject{
     
     required init(url: String!) {
         
-        var normalized_host: String = url
-        if !normalized_host.hasPrefix("http"){
-            normalized_host = "http://\(normalized_host)"
+        var normalizedHost: String = url
+        if !normalizedHost.hasPrefix("http"){
+            normalizedHost = "http://\(normalizedHost)"
         }
-        self.uri = URL(string: "\(normalized_host)")
+        self.uri = URL(string: "\(normalizedHost)")
         let d: [String: String]? = self.uri?.fragments
         self.host = d?["host"]
         self.port = d?["port"]

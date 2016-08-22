@@ -53,39 +53,39 @@ class RoundRobinSelector: ConnectionSelector{
 class ConnectionPool{
     
     var connections: [HttpConnection] = []
-    var dead_timeout:Int
-    var dead_connection_pool: [URL: [String: AnyObject]]
+    var deadTimeout:Int
+    var deadConnectionPool: [URL: [String: AnyObject]]
     var selectorClass:SelectorClass
     
-    required init(dead_timeout:Int = 10, selectorClass:SelectorClass) throws {
-        self.dead_connection_pool = [:]
-        self.dead_timeout = dead_timeout
+    required init(deadTimeout:Int = 10, selectorClass:SelectorClass) throws {
+        self.deadConnectionPool = [:]
+        self.deadTimeout = deadTimeout
         self.selectorClass = selectorClass
     }
     
-    func mark_dead(_ connection: HttpConnection){
-        remove_connection(connection)
+    func markDead(_ connection: HttpConnection){
+        removeConnection(connection)
         //Improve logic here for increasing deadcount based on increasing number of failures
-        if self.dead_connection_pool[connection.uri] == nil{
-            self.dead_connection_pool[connection.uri] = ["timeout" : self.dead_timeout as AnyObject, "dead_count": 1 as AnyObject, "connection": connection]
+        if self.deadConnectionPool[connection.uri] == nil{
+            self.deadConnectionPool[connection.uri] = ["timeout" : self.deadTimeout as AnyObject, "dead_count": 1 as AnyObject, "connection": connection]
         }else{
-            let dead_count = self.dead_connection_pool[connection.uri]!["dead_count"] as! Int
-            self.dead_connection_pool[connection.uri]!["dead_count"] = (dead_count + 1) as AnyObject
+            let dead_count = self.deadConnectionPool[connection.uri]!["dead_count"] as! Int
+            self.deadConnectionPool[connection.uri]!["dead_count"] = (dead_count + 1) as AnyObject
         }
     }
     
-    func mark_live(_ connection: HttpConnection){
-        self.add_connections(connection: connection)
-        if self.dead_connection_pool[connection.uri] != nil{
-            self.dead_connection_pool.removeValue(forKey: connection.uri)
+    func markLive(_ connection: HttpConnection){
+        self.addConnections(connection: connection)
+        if self.deadConnectionPool[connection.uri] != nil{
+            self.deadConnectionPool.removeValue(forKey: connection.uri)
         }
     }
     
     func resurrect(){
-        let threshold_minutes: Int = Int(NSDate().timeIntervalSince1970) + self.dead_timeout
-        for uri in self.dead_connection_pool.keys{
-            if (self.dead_connection_pool[uri]!["timeout"] as! Int) < threshold_minutes || (self.connections.count == 0){
-                self.mark_live(self.dead_connection_pool[uri]!["connection"] as! HttpConnection)
+        let thresholdMinutes: Int = Int(NSDate().timeIntervalSince1970) + self.deadTimeout
+        for uri in self.deadConnectionPool.keys{
+            if (self.deadConnectionPool[uri]!["timeout"] as! Int) < thresholdMinutes || (self.connections.count == 0){
+                self.markLive(self.deadConnectionPool[uri]!["connection"] as! HttpConnection)
             }
         }
     }
@@ -109,13 +109,13 @@ class ConnectionPool{
         
     }
     
-    private func add_connections(connection: HttpConnection) -> Void{
+    private func addConnections(connection: HttpConnection) -> Void{
         if self.connections.index(of: connection) == nil{
             self.connections.append(connection)
         }
     }
 
-    private func remove_connection(_ connection: HttpConnection) -> Void{
+    private func removeConnection(_ connection: HttpConnection) -> Void{
         self.connections.remove(at: self.connections.index(of: connection)!)
     }
 }

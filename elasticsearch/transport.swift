@@ -30,7 +30,7 @@ class Transport {
     
     func setConnections() {
         do {
-            self.connectionPool = try self.connectionPoolClass.init(dead_timeout: self.deadTimeout, selectorClass: self.selectorClass)
+            self.connectionPool = try self.connectionPoolClass.init(deadTimeout: self.deadTimeout, selectorClass: self.selectorClass)
         } catch TransportError.improperlyConfigured{
             print("improperly configured hosts")
         } catch{
@@ -47,11 +47,11 @@ class Transport {
     
     func addConnection(host: String) -> Void {
         let cc = connectionClass.init(url: host)
-        self.connectionPool?.mark_live(cc)
+        self.connectionPool?.markLive(cc)
     }
     
     func markDeadConnection(connection: HttpConnection) -> Void {
-        self.connectionPool?.mark_dead(connection)
+        self.connectionPool?.markDead(connection)
     }
     
     func getConnection() -> HttpConnection{
@@ -63,21 +63,20 @@ class Transport {
         return con!
     }
     
-    func performGet(path: String, params: Dictionary<String, AnyObject>?) -> Bool{
+    func performGet(path: String, params: Dictionary<String, AnyObject>?, afterGet: @escaping (Any?) -> ()){
         let connection = self.getConnection()
         connection.path = path
         processRequest(method: RequestMethod.GET.rawValue, connection: connection,  params: params, callback: {result, resp in
+            afterGet(resp)
         })
-        return true
     }
     
-    func performPost(path: String, params: Dictionary<String, AnyObject>?) -> Bool{
+    func performPost(path: String, params: Dictionary<String, AnyObject>?, afterPost: @escaping (Any?) -> ()){
         let connection = self.getConnection()
         connection.path = path
         processRequest(method: RequestMethod.POST.rawValue, connection: connection,  params: params, callback: {result, resp in
-            print(resp)
+            afterPost(resp)
         })
-        return true
     }
     
     private func processRequest(method: RequestMethod.RawValue, connection: HttpConnection, params: Dictionary<String, AnyObject>?, callback: @escaping (Bool, Any) -> ()) -> Void{

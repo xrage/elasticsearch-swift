@@ -19,10 +19,12 @@ class Elasticsearch{
         transport.setConnections()
     }
     
-    func printer(){
+    func printer(callback : @escaping (Any) -> ()){
         let params = ["size": 100, "_source": ["_id"]] as [String : Any]
-        let data = transport.performPost(path: "/buy/_search/", params: params as Dictionary<String, AnyObject>?)
-        print(data)
+        transport.performPost(path: "/buy/_search/", params: params as Dictionary<String, AnyObject>?){
+            resp in
+                callback(resp)
+        }
     }
     
 }

@@ -8,7 +8,15 @@
 
 import Foundation
 
+var sema = DispatchSemaphore( value: 0 )
 let es = Elasticsearch(hosts: ["http://elastic-staging.housing.com:9200"])
 
-es.printer()
+es.printer(){
+    resp in
+    print(resp)
+    sema.signal()
+}
+sema.wait()
+
+
 

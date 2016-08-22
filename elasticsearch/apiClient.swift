@@ -10,13 +10,8 @@
 import Foundation
 
 
-class ApiClient: NSObject, URLSessionDataDelegate {
-    
-    var sema = DispatchSemaphore( value: 0 )
-    
-    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data){
-        sema.signal()
-    }
+class ApiClient: NSObject{
+
     
     internal func get(request: URLRequest, responseCallback: @escaping (Bool, AnyObject?) -> ()) {
         execTask(request: request, taskCallback: { (status, resp)  -> Void in
@@ -52,8 +47,7 @@ class ApiClient: NSObject, URLSessionDataDelegate {
     private func execTask(request: URLRequest, taskCallback: @escaping (Bool,
         AnyObject?) -> ()) {
         
-        let session = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil )
-
+        let session = URLSession.shared
         session.dataTask(with: request) {(data, response, error) -> Void in
             if let data = data {
                 let json = try? JSONSerialization.jsonObject(with: data, options: [])
@@ -64,7 +58,6 @@ class ApiClient: NSObject, URLSessionDataDelegate {
                 }
             }
         }.resume()
-        sema.wait()
     }
     
     internal func clientURLRequest( url: URL, path: String, method: RequestMethod.RawValue,  params: Dictionary<String, Any>? = nil) -> URLRequest {
