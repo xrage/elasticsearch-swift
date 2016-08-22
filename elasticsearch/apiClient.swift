@@ -46,7 +46,6 @@ class ApiClient: NSObject{
     
     private func execTask(request: URLRequest, taskCallback: @escaping (Bool,
         AnyObject?) -> ()) {
-        
         let session = URLSession.shared
         session.dataTask(with: request) {(data, response, error) -> Void in
             if let data = data {
@@ -60,10 +59,8 @@ class ApiClient: NSObject{
         }.resume()
     }
     
-    internal func clientURLRequest( url: URL, path: String, method: RequestMethod.RawValue,  params: Dictionary<String, Any>? = nil) -> URLRequest {
-        var url = url
-        url.appendPathComponent(path)
-        var request = URLRequest(url: url)
+    internal func clientURLRequest( connection: HttpConnection, method: RequestMethod.RawValue,  params: Dictionary<String, Any>? = nil) -> URLRequest {
+        var request = URLRequest(url: connection.uri)
         request.httpMethod = method
         request.timeoutInterval = 10
         do {

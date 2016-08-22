@@ -45,16 +45,16 @@ class Transport {
         }
     }
     
-    func addConnection(host: String) -> Void {
+    internal func addConnection(host: String) -> Void {
         let cc = connectionClass.init(url: host)
         self.connectionPool?.markLive(cc)
     }
     
-    func markDeadConnection(connection: HttpConnection) -> Void {
+    internal func markDeadConnection(connection: HttpConnection) -> Void {
         self.connectionPool?.markDead(connection)
     }
     
-    func getConnection() -> HttpConnection{
+    internal func getConnection() -> HttpConnection{
         let con: HttpConnection?
         do { try con = self.connectionPool?.get_connection()}
         catch {
@@ -63,24 +63,40 @@ class Transport {
         return con!
     }
     
-    func performGet(path: String, params: Dictionary<String, AnyObject>?, afterGet: @escaping (Any?) -> ()){
+    internal func performGet(path: String, params: Dictionary<String, AnyObject>?, afterGet: @escaping (Any?) -> ()){
         let connection = self.getConnection()
         connection.path = path
-        processRequest(method: RequestMethod.GET.rawValue, connection: connection,  params: params, callback: {result, resp in
+        processRequest(method: RequestMethod.GET.rawValue, path: path,  params: params, callback: {result, resp in
             afterGet(resp)
         })
     }
     
-    func performPost(path: String, params: Dictionary<String, AnyObject>?, afterPost: @escaping (Any?) -> ()){
-        let connection = self.getConnection()
-        connection.path = path
-        processRequest(method: RequestMethod.POST.rawValue, connection: connection,  params: params, callback: {result, resp in
+    internal func performPost(path: String, params: Dictionary<String, AnyObject>?, afterPost: @escaping (Any?) -> ()){
+        processRequest(method: RequestMethod.POST.rawValue, path: path,  params: params, callback: {result, resp in
             afterPost(resp)
         })
     }
     
-    private func processRequest(method: RequestMethod.RawValue, connection: HttpConnection, params: Dictionary<String, AnyObject>?, callback: @escaping (Bool, Any) -> ()) -> Void{
-        self.apiClient.post(request: self.apiClient.clientURLRequest(url: connection.uri, path: connection.path!, method:method, params: params), responseCallback: {result, resp in
+    internal func performPatch(path: String, params: Dictionary<String, AnyObject>?, afterPost: @escaping (Any?) -> ()){
+        processRequest(method: RequestMethod.PATCH.rawValue, path: path,  params: params, callback: {result, resp in
+            afterPost(resp)
+        })
+    }
+    internal func performPut(path: String, params: Dictionary<String, AnyObject>?, afterPost: @escaping (Any?) -> ()){
+        processRequest(method: RequestMethod.PUT.rawValue, path: path,  params: params, callback: {result, resp in
+            afterPost(resp)
+        })
+    }
+    internal func performDelete(path: String, params: Dictionary<String, AnyObject>?, afterPost: @escaping (Any?) -> ()){
+        processRequest(method: RequestMethod.DELETE.rawValue, path: path,  params: params, callback: {result, resp in
+            afterPost(resp)
+        })
+    }
+    
+    private func processRequest(method: RequestMethod.RawValue, path: String, params: Dictionary<String, AnyObject>?, callback: @escaping (Bool, Any) -> ()) -> Void{
+        let connection = self.getConnection()
+        connection.path = path
+        self.apiClient.post(request: self.apiClient.clientURLRequest(connection: connection, method:method, params: params), responseCallback: {result, resp in
             if result{
                 callback(true, resp)
             }else{

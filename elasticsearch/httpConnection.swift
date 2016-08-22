@@ -17,7 +17,12 @@ class HttpConnection: NSObject{
     var scheme:String! = "http"
     var username: String?
     var password: String?
-    var path: String?
+    var path: String = "/"{
+        didSet{
+            self.uri = URL(string: "\(self.uri.absoluteString)\(self.path)")
+        }
+    }
+    
     
     required init(url: String!) {
         
@@ -44,8 +49,4 @@ class HttpConnection: NSObject{
         return lhs.host == rhs.host && lhs.port == rhs.port && lhs.scheme == rhs.scheme && lhs.ssl == rhs.ssl
     }
     
-    
-    func perform(method: RequestMethod.Type){
-        
-    }
 }
