@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		7682570F1D6775A1001BB570 /* apiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7682570E1D6775A1001BB570 /* apiClient.swift */; };
+		7698D7E71D6C7B4D00A68845 /* Indices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7698D7E61D6C7B4D00A68845 /* Indices.swift */; };
 		76F9F40F1D572D6D005701FF /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F9F40E1D572D6D005701FF /* main.swift */; };
 		76F9F4191D572D9E005701FF /* extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F9F4151D572D9E005701FF /* extensions.swift */; };
 		76F9F41A1D572D9E005701FF /* elasticsearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F9F4161D572D9E005701FF /* elasticsearch.swift */; };
@@ -32,6 +33,7 @@
 
 /* Begin PBXFileReference section */
 		7682570E1D6775A1001BB570 /* apiClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = apiClient.swift; sourceTree = "<group>"; };
+		7698D7E61D6C7B4D00A68845 /* Indices.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Indices.swift; sourceTree = "<group>"; };
 		76F9F40B1D572D6D005701FF /* elasticsearch */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = elasticsearch; sourceTree = BUILT_PRODUCTS_DIR; };
 		76F9F40E1D572D6D005701FF /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		76F9F4151D572D9E005701FF /* extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = extensions.swift; sourceTree = "<group>"; };
@@ -82,6 +84,7 @@
 				76F9F41D1D576878005701FF /* httpConnection.swift */,
 				76F9F40E1D572D6D005701FF /* main.swift */,
 				76FA38281D64D04F0085C582 /* connectionPool.swift */,
+				7698D7E61D6C7B4D00A68845 /* Indices.swift */,
 			);
 			path = elasticsearch;
 			sourceTree = "<group>";
@@ -150,6 +153,7 @@
 				76F9F4201D5769FA005701FF /* serializer.swift in Sources */,
 				76FA38291D64D04F0085C582 /* connectionPool.swift in Sources */,
 				76F9F41C1D572D9E005701FF /* transport.swift in Sources */,
+				7698D7E71D6C7B4D00A68845 /* Indices.swift in Sources */,
 				76F9F41B1D572D9E005701FF /* utility.swift in Sources */,
 				76F9F40F1D572D6D005701FF /* main.swift in Sources */,
 				7682570F1D6775A1001BB570 /* apiClient.swift in Sources */,

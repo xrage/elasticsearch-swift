@@ -8,22 +8,20 @@
 
 import Foundation
 
-class Elasticsearch{
+class Elasticsearch: Indices{
+
+    var getAsPost: Bool = false
     
-    var hosts:Array<String> = []
-    let transport: Transport = Transport()
-    
-    
-    init (hosts:Array<String>){
-        transport.hosts = hosts
-        transport.setConnections()
+    required override init(hosts: Array<String>, index: String, type: String?) {
+        super.init(hosts: hosts, index: index, type: type)
+        self.transport.toggleGet = self.getAsPost
     }
     
-    func printer(callback : @escaping (Any) -> ()){
-        let params = ["size": 100, "_source": ["_id"]] as [String : Any]
-        transport.performPost(path: "/buy/_search/", params: params as Dictionary<String, AnyObject>?){
-            resp in
-                callback(resp)
+    func search(query: [String: Any], resultCallback: @escaping (Int, Any?) -> ()) {
+        let path = self.preparePath(suffix: "_search", enableType: true)
+        self.transport.performPost(path: path, params: query){
+            status, resp in
+            resultCallback(status, resp)
         }
     }
     

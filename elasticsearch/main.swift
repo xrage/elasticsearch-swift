@@ -9,13 +9,17 @@
 import Foundation
 
 var sema = DispatchSemaphore( value: 0 )
-let es = Elasticsearch(hosts: ["http://elastic-staging.housing.com:9200"])
+let es = Elasticsearch(hosts: ["http://elastic-staging.housing.com:9200"], index:"buy", type: "inventory")
 
-es.printer(){
-    resp in
+let params = ["size": 1000, "_source": ["_id"]] as [String : Any]
+es.search(query: params, resultCallback: {
+    (status, resp) in
     print(resp)
+    print(status)
     sema.signal()
-}
+})
+
+
 sema.wait()
 
 

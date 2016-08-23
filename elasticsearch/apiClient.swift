@@ -13,48 +13,49 @@ import Foundation
 class ApiClient: NSObject{
 
     
-    internal func get(request: URLRequest, responseCallback: @escaping (Bool, AnyObject?) -> ()) {
+    internal func get(request: URLRequest, responseCallback: @escaping (Int, AnyObject?) -> ()) {
         execTask(request: request, taskCallback: { (status, resp)  -> Void in
             responseCallback(status, resp)
         })
     }
     
-    internal func patch(request: URLRequest, responseCallback: @escaping (Bool, AnyObject?) -> ()) {
+    internal func patch(request: URLRequest, responseCallback: @escaping (Int, AnyObject?) -> ()) {
         execTask(request: request, taskCallback: { (status, resp)  -> Void in
             responseCallback(status, resp)
         })
     }
     
-    internal func delete(request: URLRequest, responseCallback: @escaping (Bool, AnyObject?) -> ()) {
+    internal func delete(request: URLRequest, responseCallback: @escaping (Int, AnyObject?) -> ()) {
         execTask(request: request, taskCallback: { (status, resp)  -> Void in
             responseCallback(status, resp)
         })
     }
     
-    internal func put(request: URLRequest, responseCallback: @escaping (Bool, AnyObject?) -> ()) {
+    internal func put(request: URLRequest, responseCallback: @escaping (Int, AnyObject?) -> ()) {
         execTask(request: request, taskCallback: { (status, resp)  -> Void in
             responseCallback(status, resp)
         })
     }
     
     
-    internal func post(request: URLRequest, responseCallback: @escaping (Bool, AnyObject?) -> ()) {
+    internal func post(request: URLRequest, responseCallback: @escaping (Int, AnyObject?) -> ()) {
         execTask(request: request) { (status, resp) in
             responseCallback(status, resp)
         }
     }
     
-    private func execTask(request: URLRequest, taskCallback: @escaping (Bool,
+    private func execTask(request: URLRequest, taskCallback: @escaping (Int,
         AnyObject?) -> ()) {
         let session = URLSession.shared
         session.dataTask(with: request) {(data, response, error) -> Void in
+            let response = response as? HTTPURLResponse
             if let data = data {
                 let json = try? JSONSerialization.jsonObject(with: data, options: [])
-                if let response = response as? HTTPURLResponse , 200...299 ~= response.statusCode {
-                    taskCallback(true, json as AnyObject?)
-                } else {
-                    taskCallback(false, json as AnyObject?)
-                }
+                taskCallback((response?.statusCode)!, json as AnyObject?)
+            }
+            else{
+                let status = response == nil ? 500 : response?.statusCode
+                taskCallback(status!, error?.localizedDescription as AnyObject?)
             }
         }.resume()
     }
@@ -64,9 +65,12 @@ class ApiClient: NSObject{
         request.httpMethod = method
         request.timeoutInterval = 10
         do {
-            let jsonData = try JSONSerialization.data(withJSONObject: (params! as [String : Any]), options: .prettyPrinted)
-            request.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
-            request.httpBody = jsonData
+            if params != nil && !(params?.isEmpty)!{
+                let jsonData = try JSONSerialization.data(withJSONObject: (params! as [String : Any]), options: .prettyPrinted)
+                request.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+                request.httpBody = jsonData
+            }
+            
         } catch let error as NSError {
             print(error)
         }
