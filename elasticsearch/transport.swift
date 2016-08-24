@@ -65,53 +65,75 @@ struct Transport {
         return con!
     }
     
-    internal func performGet(path: String, params: Dictionary<String, Any>? = nil, afterGet: @escaping (Int, Any?) -> ()){
+    internal func performGet(path: String, params: Dictionary<String, Any>? = nil, body: Dictionary<String, Any>?, afterGet: @escaping (Int, Any?) -> ()){
         let method:RequestMethod.RawValue
         if self.toggleGet{
             method = RequestMethod.POST.rawValue
         }else{
             method = RequestMethod.GET.rawValue
         }
-        processRequest(method: method, path: path,  params: params, callback: {status, resp in
+        let request = prepareRequest(method: method, path: path,  params: params, body: body)
+        self.apiClient.get(request: request, responseCallback: {status, resp in
             afterGet(status, resp)
         })
     }
     
-    internal func performPost(path: String, params: Dictionary<String, Any>? = nil, afterPost: @escaping (Int, Any?) -> ()){
-        processRequest(method: RequestMethod.POST.rawValue, path: path,  params: params, callback: {status, resp in
+    internal func performPost(path: String, params: Dictionary<String, Any>? = nil, body: Dictionary<String, Any>?, afterPost: @escaping (Int, Any?) -> ()){
+        let request = prepareRequest(method: RequestMethod.POST.rawValue, path: path,  params: params, body: body)
+        self.apiClient.get(request: request, responseCallback: {status, resp in
             afterPost(status, resp)
         })
     }
     
-    internal func performPatch(path: String, params: Dictionary<String, Any>? = nil, afterPatch: @escaping (Int, Any?) -> ()){
-        processRequest(method: RequestMethod.PATCH.rawValue, path: path,  params: params, callback: {status, resp in
+    internal func performPatch(path: String, params: Dictionary<String, Any>? = nil, body: Dictionary<String, Any>?,afterPatch: @escaping (Int, Any?) -> ()){
+        let request = prepareRequest(method: RequestMethod.PATCH.rawValue, path: path,  params: params, body: body)
+        self.apiClient.patch(request: request, responseCallback: {status, resp in
             afterPatch(status, resp)
         })
+
     }
     
-    internal func performHead(path: String, params: Dictionary<String, Any>? = nil, afterHead: @escaping (Int, Any?) -> ()){
-        processRequest(method: RequestMethod.HEAD.rawValue, path: path,  params: params, callback: {status, resp in
+    internal func performHead(path: String, params: Dictionary<String, Any>? = nil, body: Dictionary<String, Any>?, afterHead: @escaping (Int, Any?) -> ()){
+        let request = prepareRequest(method: RequestMethod.HEAD.rawValue, path: path,  params: params, body: body)
+        self.apiClient.head(request: request, responseCallback: {status, resp in
             afterHead(status, resp)
         })
+
     }
     
-    internal func performPut(path: String, params: Dictionary<String, Any>? = nil, afterPut: @escaping (Int, Any?) -> ()){
-        processRequest(method: RequestMethod.PUT.rawValue, path: path,  params: params, callback: {status, resp in
+    internal func performPut(path: String, params: Dictionary<String, Any>? = nil, body: Dictionary<String, Any>?, afterPut: @escaping (Int, Any?) -> ()){
+        let request = prepareRequest(method: RequestMethod.PUT.rawValue, path: path,  params: params, body: body)
+        self.apiClient.put(request: request, responseCallback: {status, resp in
             afterPut(status, resp)
         })
     }
-    internal func performDelete(path: String, params: Dictionary<String, Any>? = nil, afterDelete: @escaping (Int, Any?) -> ()){
-        processRequest(method: RequestMethod.DELETE.rawValue, path: path,  params: params, callback: {status, resp in
+    
+    internal func performDelete(path: String, params: Dictionary<String, Any>? = nil, body: Dictionary<String, Any>?, afterDelete: @escaping (Int, Any?) -> ()){
+        let request = prepareRequest(method: RequestMethod.DELETE.rawValue, path: path,  params: params, body: body)
+        self.apiClient.delete(request: request, responseCallback: {status, resp in
             afterDelete(status, resp)
         })
+
     }
     
-    private func processRequest(method: RequestMethod.RawValue, path: String, params: Dictionary<String, Any>?, callback: @escaping (Int, Any) -> ()) -> Void{
+    private func prepareRequest(method: RequestMethod.RawValue, path: String, params: Dictionary<String, Any>?, body: Dictionary<String, Any>?)-> URLRequest{
         let connection = self.getConnection()
-        connection.path = path
-        self.apiClient.post(request: self.apiClient.clientURLRequest(connection: connection, method:method, params: params), responseCallback: {status, resp in
-            callback(status, resp)
-        })
+        connection.path = self.preparePath(path: path, params: params)
+        return self.apiClient.clientURLRequest(connection: connection, method:method, body: body)
     }
+    
+    private func preparePath(path: String, params: Dictionary<String, Any>?) -> String{
+        var qString:String = ""
+        if (params != nil) && !(params?.isEmpty)!{
+            var query:[String] = []
+            for (key, value) in params!{
+                query.append("\(key)=\(value)")
+            }
+            qString = query.joined(separator: "&")
+        }
+        return "\(path)?\(qString)"
+    }
+    
+    
 
 }

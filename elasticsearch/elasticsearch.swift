@@ -17,9 +17,9 @@ class Elasticsearch: Indices{
         self.transport.toggleGet = self.getAsPost
     }
     
-    func search(query: [String: Any], resultCallback: @escaping (Int, Any?) -> ()) {
-        let path = self.preparePath(suffix: "_search", enableType: true)
-        self.transport.performPost(path: path, params: query){
+    func search(index: String, type: String, params: [String: Any]?, body: [String: Any]?, resultCallback: @escaping (Int, Any?) -> ()) {
+        let path = self.preparePath(index: index, type: type, suffix: "_search")
+        self.transport.performPost(path: path, params: params, body: body){
             status, resp in
             resultCallback(status, resp)
         }

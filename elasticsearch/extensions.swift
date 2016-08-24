@@ -9,21 +9,41 @@
 import Foundation
 
 
-extension Dictionary {
+internal extension Dictionary {
     mutating func update(other:Dictionary) {
         for (key,value) in other {
             self.updateValue(value, forKey:key)
         }
     }
-}
-
-extension Array where Element: Equatable {
-    func removeObject(object: Element) -> [Element] {
-        return filter { $0 != object }
+    
+    func filterAllowedKeys(allowedParams: [String]) -> Dictionary<String, Any>{
+        var filteredParams:[String: Any] = [:]
+        for (key, value) in self{
+            if allowedParams.exists(object: key as! String) {
+                filteredParams[key as! String] = value
+            }
+        }
+        return filteredParams
     }
 }
 
-extension Array {
+internal extension Array where Element: Equatable {
+    
+    func removeObject(object: Element) -> [Element] {
+        return filter { $0 != object }
+    }
+    
+    func exists(object: Element) -> Bool{
+        var result:Bool = false
+        for i in self{
+            if i == object{
+                result = true
+                break
+            }
+        }
+        return result
+    }
+    
     func randomItem() -> Element {
         let index = Int(arc4random_uniform(UInt32(self.count)))
         return self[index]
@@ -31,7 +51,8 @@ extension Array {
 }
 
 
-extension URL {
+
+internal extension URL {
     var fragments: [String: String] {
         var queryStrings = [String: String]()
         if let query = self.query {

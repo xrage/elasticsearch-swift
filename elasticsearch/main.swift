@@ -11,8 +11,8 @@ import Foundation
 var sema = DispatchSemaphore( value: 0 )
 let es = Elasticsearch(hosts: ["http://elastic-staging.housing.com:9200"], index:"buy", type: "inventory")
 
-let params = ["size": 1000, "_source": ["_id"]] as [String : Any]
-es.search(query: params, resultCallback: {
+let body = ["size": 1000, "_source": ["_id"]] as [String : Any]
+es.search(index: "buy", type: "inventory", params: nil, body: body, resultCallback: {
     (status, resp) in
     print(resp)
     print(status)

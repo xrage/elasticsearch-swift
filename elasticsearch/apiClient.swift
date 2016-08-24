@@ -37,6 +37,11 @@ class ApiClient: NSObject{
         })
     }
     
+    internal func head(request: URLRequest, responseCallback: @escaping (Int, AnyObject?) -> ()) {
+        execTask(request: request, taskCallback: { (status, resp)  -> Void in
+            responseCallback(status, resp)
+        })
+    }
     
     internal func post(request: URLRequest, responseCallback: @escaping (Int, AnyObject?) -> ()) {
         execTask(request: request) { (status, resp) in
@@ -60,13 +65,13 @@ class ApiClient: NSObject{
         }.resume()
     }
     
-    internal func clientURLRequest( connection: HttpConnection, method: RequestMethod.RawValue,  params: Dictionary<String, Any>? = nil) -> URLRequest {
+    internal func clientURLRequest( connection: HttpConnection, method: RequestMethod.RawValue,  body: Dictionary<String, Any>? = nil) -> URLRequest {
         var request = URLRequest(url: connection.uri)
         request.httpMethod = method
         request.timeoutInterval = 10
         do {
-            if params != nil && !(params?.isEmpty)!{
-                let jsonData = try JSONSerialization.data(withJSONObject: (params! as [String : Any]), options: .prettyPrinted)
+            if body != nil && !(body?.isEmpty)!{
+                let jsonData = try JSONSerialization.data(withJSONObject: (body! as [String : Any]), options: .prettyPrinted)
                 request.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
                 request.httpBody = jsonData
             }
